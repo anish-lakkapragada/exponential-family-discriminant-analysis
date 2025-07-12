@@ -1,19 +1,26 @@
-[
-    {
-        "data": {
-            "distributions": ["weibull", "weibull"], 
-            "true_params": [
-                {"c": 3, "scale": 2}, 
-                {"c": 3, "scale": 4}
-            ], 
-            "n_train": 200, 
-            "data_noise_rate": 0.00,
-            "class_noise_rate": 0.00,
-            "n_test": 100, 
-            "class_imbalance_true": [0.5, 0.5]
-        }, 
-        "methods": ["efda-weibull", "efda-weibull"], 
-        "num_classes": 2, 
-        "param_defaults": {"k": 3}
-    }
-]
+{
+    "name": "weibull-single-run",
+    "store_dir": null,
+    "runs": [
+        {
+            "data": {
+                "distributions": ["weibull", "weibull"], 
+                "true_params": [
+                    {"c": 3, "scale": 2}, 
+                    {"c": 3, "scale": 4}
+                ], 
+                "n_train": 200, 
+                "data_noise_rate": 0.00,
+                "class_noise_rate": 0.00,
+                "n_test": 100, 
+                "class_imbalance_true": [0.5, 0.5]
+            }, 
+            "methods": ["efda-weibull", "efda-weibull"], 
+            "num_classes": 2, 
+            "param_defaults": [
+                {"k": 3}, 
+                {"k": 3}
+            ]
+        }
+    ]
+}

@@ -5,8 +5,11 @@ Code providing all the class-conditional densities & data-generators in this pro
 from models import ExpoFamilyDensity
 import numpy as np
 from scipy.stats import weibull_min
+from typing import Optional
 
 class WeibullDensity(ExpoFamilyDensity): 
+    k: Optional[float] = None 
+
     def fit_density(self, X):
         N_C = X.shape[0]
         eta = - N_C / np.sum(X**self.k)
@@ -18,6 +21,6 @@ class WeibullDensity(ExpoFamilyDensity):
     def evaluate_pdf(self, x):
         return weibull_min.pdf(x, c=self.k, scale=self.eta_to_lambda(self.natural_params[0], self.k))
 
-def sample_weibull(n_samples: int, seed: int = 42, data_noise_rate=0.00, class_noise_rate=0.00, **kwargs) -> None: 
-    return weibull_min.rvs( size=n_samples, random_state=seed, **kwargs)
+def sample_weibull(n_samples: int, seed: int = 42, data_noise_rate=0.00, **kwargs) -> None: 
+    return weibull_min.rvs(size=n_samples, random_state=seed, **kwargs)
 # %%

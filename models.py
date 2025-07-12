@@ -2,14 +2,14 @@
 Code providing all the types for this project.
 """
 
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List, Union, Dict, Tuple
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Optional, List, Union, Dict, Tuple, Literal
 import numpy as np 
 from scipy.stats import multivariate_normal, norm
 from sklearn.covariance import EmpiricalCovariance
 
 NaturalParameters = List[Union[np.ndarray, float]] # natural parameters 
-ParamDefaults = Dict[str, Union[np.ndarray, float]] # parameter defaults 
+ParamDefaults = Dict[str, Union[List[float], float]] # parameter defaults 
 Dataset = Tuple[np.ndarray, np.ndarray]
 Speeds = List[float]
 
@@ -22,6 +22,15 @@ class Density(BaseModel):
     def evaluate_pdf(self, x: np.ndarray) -> float: 
         pass 
 
+    def set_param_defaults(self, param_defaults: ParamDefaults) -> None: 
+        for (param_name, param_value) in param_defaults.items(): 
+            if type(param_value) == list: 
+                setattr(self, param_name, np.array(param_value))
+            elif type(param_value) == float: 
+                setattr(self, param_name, param_value)
+            else: 
+                raise Exception
+        
 
 class Normal_LDA_Density(Density): 
     mean: np.ndarray
@@ -51,12 +60,7 @@ class Normal_QDA_Density(Normal_LDA_Density):
         self.cov_matrix = cov_estimator.covariance_
 
 class ExpoFamilyDensity(Density): 
-    natural_params: NaturalParameters
-
-    def set_param_defaults(self, param_defaults: ParamDefaults) -> None: 
-        for (param_name, param_value) in param_defaults.items(): 
-            setattr(self, param_name, param_value)
-        
+    natural_params: Optional[NaturalParameters] = None
 
 Class_Conditional_Density = Union[Normal_LDA_Density, Normal_QDA_Density, ExpoFamilyDensity]
 
@@ -65,3 +69,23 @@ class EvaluationObj:
 
     auc_roc: float 
     y_pred: np.ndarray
+
+class RunData(BaseModel): 
+    n_train: int 
+    n_test: int 
+    class_noise_rate: float = Field(..., ge=0.0, le=1.0)
+    data_noise_rate: float = Field(..., ge=0.0, le=1.0)
+    class_imbalance_true: List[float]
+    distributions: List[Literal["weibull"]]
+    true_params: List[ParamDefaults]
+
+class RunConfig(BaseModel): 
+    data:           RunData
+    methods:        List[Literal["lda", "qda", "efda-weibull"]]
+    num_classes:    int
+    param_defaults: Optional[List[ParamDefaults]]
+
+class EvaluationConfig(BaseModel): 
+    name: str 
+    store_dir: Optional[str]
+    runs: List[RunConfig]

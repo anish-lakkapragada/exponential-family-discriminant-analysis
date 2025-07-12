@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "efda-test"
+version = "0.1.0"
+description = "EFDA Test Project"
+authors = [
+    {name = "Anish Lakkapragada", email = "anish.lakkapragada@yale.edu"},
+]
+dependencies = [
+    "pydantic>=2.0",
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "rich>=14.0.0",
+]
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "flake8",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
