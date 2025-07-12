@@ -26,7 +26,7 @@ def plot_distributions(class_one_lambda, class_zero_lambda):
     plt.plot(x, p_x_complement, label=r"$\mathbb{P}[Y = 0 \mid X]$")
     plt.xlabel("X")
     plt.ylabel("Probability")
-    plt.title(r"Our Data with $\alpha = 0.7$")
+    # plt.title(r"Our Data with $\alpha = 0.7$")
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
@@ -97,7 +97,7 @@ plt.plot(data_values, true_log_odds.flatten(), label="True Log Odds Function", c
 
 plt.xlabel("X")
 plt.ylabel(r"$\log \frac{p(X)}{1 - p(X)}$")
-plt.title(f"Logistic Regression and EFDA Log-Odds over {N_trials} trials, $n = {n}$")
+# plt.title(f"Logistic Regression and EFDA Log-Odds over {N_trials} trials, $n = {n}$")
 plt.legend()
 plt.show()
 
