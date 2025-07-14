@@ -1,9 +1,13 @@
-from models import Class_Conditional_Density, Normal_LDA_Density, Speeds, EvaluationObj, EvaluationConfig
+from models import Class_Conditional_Density, Normal_LDA_Density, Speeds, EvalResult, EvaluationConfig, ExperimentEvaluation
 from helpers import generate_data, METHOD_TO_DENSITY
+from custom import run_log_reg_wishart
+from sklearn.metrics import roc_auc_score
 from typing import List 
 import numpy as np
 import time
 from rich.panel import Panel
+from rich.table import Table 
+from rich.console import Console
 from rich import print 
 from pathlib import Path 
 
@@ -44,19 +48,19 @@ class Evaluator:
         assert np.abs(np.sum(self.class_weight_mles) - 1.00) < 1e-5, np.abs(np.sum(self.class_weight_mles) - 1.00)
         
         if using_lda: 
-            # update all shared covariance matrices. 
+            X2 = X if X.ndim > 1 else X[:, np.newaxis]
 
-            d = X.shape[1]
+            d = X2.shape[1]
+
             total_scatter = np.zeros((d, d))
+            for k, dist in enumerate(self.distributions):
+                Xk = X2[y == k]
+                mu_k = np.atleast_1d(dist.mean)
+                diff = Xk - mu_k
+                total_scatter += diff.T @ diff
 
-            for class_k in range(self.num_classes):
-                Xk = X[y == class_k]
-                mu_k = self.distributions[class_k].mean        
-                diff = Xk - mu_k                               
-                total_scatter += diff.T.dot(diff)              
-
-            N = X.shape[0]
-            pooled_cov = total_scatter / N                  
+            N = X2.shape[0]
+            pooled_cov = total_scatter / N
 
             for dist in self.distributions:
                 dist.cov_matrix = pooled_cov
@@ -64,29 +68,80 @@ class Evaluator:
         return speeds 
 
 
-    def evaluate(self, X: np.ndarray, y: np.ndarray, plot_auc: False) -> EvaluationObj: 
-        pass 
+    def evaluate(self, X: np.ndarray, y: np.ndarray, plot_auc: bool =  False) -> EvalResult: 
+        denom = np.zeros((self.num_classes, y.shape[0]))
+        for i, distribution in enumerate(self.distributions): 
+            denom[i] = self.class_weight_mles[i] * distribution.evaluate_pdf(X)
+        y_pred = denom[1] / np.sum(denom, axis=0)
+
+        return EvalResult(
+            # y_pred=y_pred, 
+            auc_roc=roc_auc_score(y, y_pred), 
+            acc=np.sum(np.round(y_pred) == y) / y.shape[0]
+        )
+
 
 if __name__ == "__main__": 
     json_text = Path("config.json").read_text(encoding="utf-8")
     evaluation_cfg = EvaluationConfig.model_validate_json(json_text)
-    for run_num, run in enumerate(evaluation_cfg.runs):
-        print(Panel(f"[blue] Running Run #{run_num + 1}."))
+    
+    for exp_num, experiment in enumerate(evaluation_cfg.experiments):
+        evaluation_table = Table(title=experiment.experiment_name)
+        for col in ["Methods", "True Params", "Class Imbalance", "Train AUC", "Train Acc", "Test AUC", "Test Acc"]: 
+            evaluation_table.add_column(col)
 
-        X_train, y_train, X_test, y_test = generate_data(run.data)
-        
-        run_densities = [] 
-        for i, method in enumerate(run.methods): 
-            density = METHOD_TO_DENSITY[method]()
-            if run.param_defaults: 
-                param_defaults = run.param_defaults[i]
+        test_to_tracker_train = {i: ExperimentEvaluation() for i in range(len(experiment.tests))}
+        test_to_tracker_test = {i: ExperimentEvaluation() for i in range(len(experiment.tests))}
 
-                density.set_param_defaults(param_defaults)
-            run_densities.append(density)
+        for trial in range(experiment.n_trials): 
+            X_train, y_train, X_test, y_test = generate_data(experiment.data)
 
-        evaluator = Evaluator(num_classes=run.num_classes, distributions=run_densities)
-        speeds = evaluator.fit_class_densities(X_train, y_train)
-        
-        
+            for t, test in enumerate(experiment.tests): 
+                if test.custom: 
+                    if test.densities[0] == "log-reg":
+                        # use logistic regression 
+                        eval_result_train, eval_result_test = run_log_reg_wishart(X_train, y_train, X_test, y_test)
+                        test_to_tracker_train[t].add_result(evaluator.evaluate(X_train, y_train))
+                        test_to_tracker_test[t].add_result(evaluator.evaluate(X_test, y_test))
+                        break  
 
-        
+                run_densities = [] 
+                for i, method in enumerate(test.densities): 
+                    density = METHOD_TO_DENSITY[method]()
+                    if test.param_defaults: 
+                        param_defaults = test.param_defaults[i]
+
+                        density.set_param_defaults(param_defaults)
+                    run_densities.append(density)
+
+                evaluator = Evaluator(num_classes=experiment.data.num_classes, distributions=run_densities)
+                speeds = evaluator.fit_class_densities(X_train, y_train)
+                test_to_tracker_train[t].add_result(evaluator.evaluate(X_train, y_train))
+                test_to_tracker_test[t].add_result(evaluator.evaluate(X_test, y_test))
+                
+        for t, test in enumerate(experiment.tests): 
+            test_tracker_train, test_tracker_test = test_to_tracker_train[t], test_to_tracker_test[t]
+            evaluation_table.add_row(",".join(test.densities), 
+                                    str(experiment.data.true_params),
+                                    ",".join([str(i) for i in experiment.data.class_imbalance_true])
+                                    , str(test_tracker_train.get_auc()), str(test_tracker_train.get_acc())
+                                    , str(test_tracker_test.get_auc()), str(test_tracker_test.get_acc()))
+            
+        console = Console()
+        console.print(evaluation_table)
+
+        if evaluation_cfg.store_dir: 
+            store_dir = Path(evaluation_cfg.store_dir)
+            store_dir.mkdir(parents=True, exist_ok=True)
+
+            store_file = store_dir / evaluation_cfg.name
+
+            with store_file.open("w", encoding="utf-8") as f:
+                file_console = Console(file=f, width=console.width)
+                file_console.print(evaluation_table)
+
+            config_json = evaluation_cfg.model_dump_json(indent=2)
+            with store_file.open("a", encoding="utf-8") as f:
+                f.write(config_json)
+                f.write("\n")
+

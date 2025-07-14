@@ -9,7 +9,7 @@ from scipy.stats import multivariate_normal, norm
 from sklearn.covariance import EmpiricalCovariance
 
 NaturalParameters = List[Union[np.ndarray, float]] # natural parameters 
-ParamDefaults = Dict[str, Union[List[float], float]] # parameter defaults 
+ParamDefaults = Dict[str, Union[List[float], List[List[float]], float]] # parameter defaults 
 Dataset = Tuple[np.ndarray, np.ndarray]
 Speeds = List[float]
 
@@ -33,8 +33,8 @@ class Density(BaseModel):
         
 
 class Normal_LDA_Density(Density): 
-    mean: np.ndarray
-    cov_matrix: np.ndarray # will be shared across all classes.
+    mean: Optional[np.ndarray] = None
+    cov_matrix: Optional[np.ndarray] = None # will be shared across all classes.
 
     def fit_density(self, X: np.ndarray) -> None:
         self.cov_matrix = None # deal with this later!
@@ -64,28 +64,56 @@ class ExpoFamilyDensity(Density):
 
 Class_Conditional_Density = Union[Normal_LDA_Density, Normal_QDA_Density, ExpoFamilyDensity]
 
-class EvaluationObj: 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    auc_roc: float 
-    y_pred: np.ndarray
-
-class RunData(BaseModel): 
+class DataConfig(BaseModel): 
     n_train: int 
     n_test: int 
+    num_classes: int
     class_noise_rate: float = Field(..., ge=0.0, le=1.0)
     data_noise_rate: float = Field(..., ge=0.0, le=1.0)
     class_imbalance_true: List[float]
-    distributions: List[Literal["weibull"]]
+    distributions: List[Literal["weibull", "wishart"]]
     true_params: List[ParamDefaults]
 
-class RunConfig(BaseModel): 
-    data:           RunData
-    methods:        List[Literal["lda", "qda", "efda-weibull"]]
-    num_classes:    int
-    param_defaults: Optional[List[ParamDefaults]]
+class MethodConfig(BaseModel): 
+    densities: List[Literal["lda", "qda", "efda-weibull", "efda-wishart", "log-reg"]]
+    param_defaults: Optional[List[ParamDefaults]] = None
+    custom: bool = False 
+
+class ExperimentConfig(BaseModel): 
+    experiment_name: str
+    data: DataConfig
+    n_trials: int
+    tests: List[MethodConfig]
 
 class EvaluationConfig(BaseModel): 
     name: str 
     store_dir: Optional[str]
-    runs: List[RunConfig]
+    experiments: List[ExperimentConfig]
+
+class EvalResult(BaseModel): 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    auc_roc: float
+    acc: float
+    # y_pred: np.ndarray
+
+class ExperimentEvaluation: 
+    auc_roc: float 
+    auc_roc_std: float 
+    acc: float
+    acc_std: float 
+    eval_results : List[EvalResult] = [] 
+    
+    def add_result(self, eval_result: EvalResult): 
+        self.eval_results.append(eval_result)
+        aucs, accs = [res.auc_roc for res in self.eval_results], [res.acc for res in self.eval_results]
+        self.auc_roc = np.mean(aucs)
+        self.auc_roc_std = np.std(aucs)
+        self.acc = np.mean(accs)
+        self.acc_std = np.std(accs)
+    
+    def get_auc(self): 
+        return f"{round(self.auc_roc, 4)} ± {round(self.auc_roc_std, 4)}"
+    
+    def get_acc(self): 
+        return f"{round(self.acc, 4)} ± {round(self.acc_std, 4)}"
+    

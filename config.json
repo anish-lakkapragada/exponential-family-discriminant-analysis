@@ -1,25 +1,77 @@
 {
-    "name": "weibull-single-run",
-    "store_dir": null,
-    "runs": [
+    "name": "experiments",
+    "store_dir": "evals",
+    "experiments": [
         {
+            "experiment_name": "Wishart Experiments",
+            "data": {
+                "distributions": ["wishart", "wishart"], 
+                "true_params": [
+                    {"df": 20, "scale": [
+                        [2, 0], [0, 4]
+                    ]}, 
+                    {"df": 20, "scale": [
+                        [3, 0], [0, 3]
+                    ]} 
+                ], 
+                "n_train": 100, 
+                "data_noise_rate": 0.00,
+                "class_noise_rate": 0.00,
+                "n_test": 1000, 
+                "class_imbalance_true": [0.4, 0.6], 
+                "num_classes": 2
+            }, 
+            "n_trials": 100,
+            "tests": [
+                {
+                    "densities": ["efda-wishart", "efda-wishart"], 
+                    "param_defaults": [
+                        {"p": 2, "n": 20}, 
+                        {"p": 2, "n": 20}
+                    ]
+                }, 
+                {
+                    "densities": ["log-reg", "log-reg"],
+                    "custom": true
+                }
+            ]
+        }, 
+        {
+            "experiment_name": "Weibull Experiments",
             "data": {
                 "distributions": ["weibull", "weibull"], 
                 "true_params": [
-                    {"c": 3, "scale": 2}, 
-                    {"c": 3, "scale": 4}
+                    {"c": 10, "scale": 2}, 
+                    {"c": 10, "scale": 4}
                 ], 
-                "n_train": 200, 
+                "n_train": 100, 
                 "data_noise_rate": 0.00,
                 "class_noise_rate": 0.00,
-                "n_test": 100, 
-                "class_imbalance_true": [0.5, 0.5]
+                "n_test": 1000, 
+                "class_imbalance_true": [0.5, 0.5], 
+                "num_classes": 2
             }, 
-            "methods": ["efda-weibull", "efda-weibull"], 
-            "num_classes": 2, 
-            "param_defaults": [
-                {"k": 3}, 
-                {"k": 3}
+            "n_trials": 100,
+            "tests": [
+                {
+                    "densities": ["efda-weibull", "efda-weibull"], 
+                    "param_defaults": [
+                        {"k": 10}, 
+                        {"k": 10}
+                    ]
+                },
+                {
+                    "densities": ["lda", "lda"], 
+                    "param_defaults": [
+                        {}, {}
+                    ]
+                }, 
+                {
+                    "densities": ["qda", "qda"], 
+                    "param_defaults": [
+                        {}, {}
+                    ]
+                }
             ]
         }
     ]

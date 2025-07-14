@@ -1,0 +1,156 @@
+                                                                             Weibull Experiments                                                                              
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
+┃ Methods                   ┃ True Params                                            ┃ Class Imbalance ┃ Train AUC      ┃ Train Acc       ┃ Test AUC       ┃ Test Acc        ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
+│ efda-weibull,efda-weibull │ [{'c': 10.0, 'scale': 2.0}, {'c': 10.0, 'scale': 4.0}] │ 0.5,0.5         │ 0.9455 ± 0.067 │ 0.909 ± 0.1018  │ 0.9456 ± 0.067 │ 0.909 ± 0.1018  │
+│ lda,lda                   │ [{'c': 10.0, 'scale': 2.0}, {'c': 10.0, 'scale': 4.0}] │ 0.5,0.5         │ 0.9456 ± 0.067 │ 0.9091 ± 0.1018 │ 0.9457 ± 0.067 │ 0.9092 ± 0.1018 │
+│ qda,qda                   │ [{'c': 10.0, 'scale': 2.0}, {'c': 10.0, 'scale': 4.0}] │ 0.5,0.5         │ 0.9457 ± 0.067 │ 0.9093 ± 0.1018 │ 0.9458 ± 0.067 │ 0.9094 ± 0.1017 │
+└───────────────────────────┴────────────────────────────────────────────────────────┴─────────────────┴────────────────┴─────────────────┴────────────────┴─────────────────┘
+{
+  "name": "experiments",
+  "store_dir": "evals",
+  "experiments": [
+    {
+      "experiment_name": "Wishart Experiments",
+      "data": {
+        "n_train": 100,
+        "n_test": 1000,
+        "num_classes": 2,
+        "class_noise_rate": 0.0,
+        "data_noise_rate": 0.0,
+        "class_imbalance_true": [
+          0.4,
+          0.6
+        ],
+        "distributions": [
+          "wishart",
+          "wishart"
+        ],
+        "true_params": [
+          {
+            "df": 20.0,
+            "scale": [
+              [
+                2.0,
+                0.0
+              ],
+              [
+                0.0,
+                4.0
+              ]
+            ]
+          },
+          {
+            "df": 20.0,
+            "scale": [
+              [
+                3.0,
+                0.0
+              ],
+              [
+                0.0,
+                3.0
+              ]
+            ]
+          }
+        ]
+      },
+      "n_trials": 100,
+      "tests": [
+        {
+          "densities": [
+            "efda-wishart",
+            "efda-wishart"
+          ],
+          "param_defaults": [
+            {
+              "p": 2.0,
+              "n": 20.0
+            },
+            {
+              "p": 2.0,
+              "n": 20.0
+            }
+          ],
+          "custom": false
+        },
+        {
+          "densities": [
+            "log-reg",
+            "log-reg"
+          ],
+          "param_defaults": null,
+          "custom": true
+        }
+      ]
+    },
+    {
+      "experiment_name": "Weibull Experiments",
+      "data": {
+        "n_train": 100,
+        "n_test": 1000,
+        "num_classes": 2,
+        "class_noise_rate": 0.0,
+        "data_noise_rate": 0.0,
+        "class_imbalance_true": [
+          0.5,
+          0.5
+        ],
+        "distributions": [
+          "weibull",
+          "weibull"
+        ],
+        "true_params": [
+          {
+            "c": 10.0,
+            "scale": 2.0
+          },
+          {
+            "c": 10.0,
+            "scale": 4.0
+          }
+        ]
+      },
+      "n_trials": 100,
+      "tests": [
+        {
+          "densities": [
+            "efda-weibull",
+            "efda-weibull"
+          ],
+          "param_defaults": [
+            {
+              "k": 10.0
+            },
+            {
+              "k": 10.0
+            }
+          ],
+          "custom": false
+        },
+        {
+          "densities": [
+            "lda",
+            "lda"
+          ],
+          "param_defaults": [
+            {},
+            {}
+          ],
+          "custom": false
+        },
+        {
+          "densities": [
+            "qda",
+            "qda"
+          ],
+          "param_defaults": [
+            {},
+            {}
+          ],
+          "custom": false
+        }
+      ]
+    }
+  ]
+}

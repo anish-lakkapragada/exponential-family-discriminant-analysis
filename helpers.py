@@ -1,22 +1,24 @@
 """
 Code for some helper dictionaries.
 """
-from distributions import sample_weibull, WeibullDensity
-from models import Normal_LDA_Density, Normal_QDA_Density, RunData, Dataset, Class_Conditional_Density
+from distributions import sample_weibull, sample_wishart, WishartDensity, WeibullDensity
+from models import Normal_LDA_Density, Normal_QDA_Density, DataConfig, Dataset, Class_Conditional_Density
 from typing import Dict
 import numpy as np 
 
 METHOD_TO_DENSITY: Dict[str, Class_Conditional_Density]  = {
     "lda": Normal_LDA_Density, 
     "qda": Normal_QDA_Density, 
-    "efda-weibull": WeibullDensity
+    "efda-weibull": WeibullDensity, 
+    "efda-wishart": WishartDensity,
 }
 
 DISTRIBUTION_TO_SAMPLE_GENERATION = {
-    "weibull": sample_weibull
+    "weibull": sample_weibull, 
+    "wishart": sample_wishart
 }
 
-def generate_data(run_data: RunData) -> Dataset: 
+def generate_data(run_data: DataConfig) -> Dataset: 
     tot = run_data.n_train + run_data.n_test 
     X_tot, y_tot = [], []
     for i, distribution in enumerate(run_data.distributions):
