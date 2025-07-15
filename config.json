@@ -31,6 +31,48 @@
                     ]
                 }, 
                 {
+                    "densities": ["log-reg-matrix", "log-reg-matrix"],
+                    "custom": true
+                }
+            ]
+        }, 
+        {
+            "experiment_name": "Laplace Experiments",
+            "data": {
+                "distributions": ["laplace", "laplace"], 
+                "true_params": [
+                    {"loc": 2, "scale": 3}, 
+                    {"loc": 3, "scale": 2} 
+                ], 
+                "n_train": 100, 
+                "data_noise_rate": 0.00,
+                "class_noise_rate": 0.00,
+                "n_test": 1000, 
+                "class_imbalance_true": [0.4, 0.6], 
+                "num_classes": 2
+            }, 
+            "n_trials": 100,
+            "tests": [
+                {
+                    "densities": ["efda-laplace", "efda-laplace"], 
+                    "param_defaults": [
+                        {"mu": 2},
+                        {"mu": 3}
+                    ]
+                }, 
+                {
+                    "densities": ["lda", "lda"], 
+                    "param_defaults": [
+                        {}, {}
+                    ]
+                }, 
+                {
+                    "densities": ["qda", "qda"], 
+                    "param_defaults": [
+                        {}, {}
+                    ]
+                }, 
+                {
                     "densities": ["log-reg", "log-reg"],
                     "custom": true
                 }
@@ -71,6 +113,10 @@
                     "param_defaults": [
                         {}, {}
                     ]
+                }, 
+                {
+                    "densities": ["log-reg", "log-reg"],
+                    "custom": true
                 }
             ]
         }

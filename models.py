@@ -71,11 +71,11 @@ class DataConfig(BaseModel):
     class_noise_rate: float = Field(..., ge=0.0, le=1.0)
     data_noise_rate: float = Field(..., ge=0.0, le=1.0)
     class_imbalance_true: List[float]
-    distributions: List[Literal["weibull", "wishart"]]
+    distributions: List[Literal["weibull", "wishart", "laplace"]]
     true_params: List[ParamDefaults]
 
 class MethodConfig(BaseModel): 
-    densities: List[Literal["lda", "qda", "efda-weibull", "efda-wishart", "log-reg"]]
+    densities: List[Literal["lda", "qda", "efda-weibull", "efda-wishart", "efda-laplace", "log-reg", "log-reg-matrix"]]
     param_defaults: Optional[List[ParamDefaults]] = None
     custom: bool = False 
 

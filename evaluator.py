@@ -1,6 +1,6 @@
 from models import Class_Conditional_Density, Normal_LDA_Density, Speeds, EvalResult, EvaluationConfig, ExperimentEvaluation
 from helpers import generate_data, METHOD_TO_DENSITY
-from custom import run_log_reg_wishart
+from custom import run_log_reg_wishart, run_log_reg
 from sklearn.metrics import roc_auc_score
 from typing import List 
 import numpy as np
@@ -98,7 +98,13 @@ if __name__ == "__main__":
 
             for t, test in enumerate(experiment.tests): 
                 if test.custom: 
-                    if test.densities[0] == "log-reg":
+                    if test.densities[0] == "log-reg": 
+                        eval_result_train, eval_result_test = run_log_reg(X_train, y_train, X_test, y_test)
+                        test_to_tracker_train[t].add_result(evaluator.evaluate(X_train, y_train))
+                        test_to_tracker_test[t].add_result(evaluator.evaluate(X_test, y_test))
+                        break  
+
+                    elif test.densities[0] == "log-reg-matrix":
                         # use logistic regression 
                         eval_result_train, eval_result_test = run_log_reg_wishart(X_train, y_train, X_test, y_test)
                         test_to_tracker_train[t].add_result(evaluator.evaluate(X_train, y_train))

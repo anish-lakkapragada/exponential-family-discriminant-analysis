@@ -1,7 +1,7 @@
 """
 Code for some helper dictionaries.
 """
-from distributions import sample_weibull, sample_wishart, WishartDensity, WeibullDensity
+from distributions import sample_weibull, sample_wishart, sample_laplace, WishartDensity, WeibullDensity, LaplaceDensity
 from models import Normal_LDA_Density, Normal_QDA_Density, DataConfig, Dataset, Class_Conditional_Density
 from typing import Dict
 import numpy as np 
@@ -11,11 +11,13 @@ METHOD_TO_DENSITY: Dict[str, Class_Conditional_Density]  = {
     "qda": Normal_QDA_Density, 
     "efda-weibull": WeibullDensity, 
     "efda-wishart": WishartDensity,
+    "efda-laplace": LaplaceDensity
 }
 
 DISTRIBUTION_TO_SAMPLE_GENERATION = {
     "weibull": sample_weibull, 
-    "wishart": sample_wishart
+    "wishart": sample_wishart, 
+    "laplace": sample_laplace
 }
 
 def generate_data(run_data: DataConfig) -> Dataset: 

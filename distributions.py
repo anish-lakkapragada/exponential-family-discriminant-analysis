@@ -4,7 +4,7 @@ Code providing all the class-conditional densities & data-generators in this pro
 # %%
 from models import ExpoFamilyDensity
 import numpy as np
-from scipy.stats import weibull_min, wishart    
+from scipy.stats import weibull_min, wishart, laplace   
 from typing import Optional
 
 class WeibullDensity(ExpoFamilyDensity): 
@@ -20,6 +20,21 @@ class WeibullDensity(ExpoFamilyDensity):
     
     def evaluate_pdf(self, x):
         return weibull_min.pdf(x, c=self.k, scale=WeibullDensity.eta_to_lambda(self.natural_params[0], self.k))
+    
+class LaplaceDensity(ExpoFamilyDensity): 
+    mu: Optional[float] = None 
+    b: Optional[float] = None 
+
+    def fit_density(self, X):
+        N_C = X.shape[0]
+        eta = - N_C / np.sum(np.abs(X - self.mu))
+        self.natural_params = [eta]
+    
+    def eta_to_b(eta): 
+        return -1 / eta 
+
+    def evaluate_pdf(self, x): 
+        return laplace.pdf(x, loc= self.mu, scale=LaplaceDensity.eta_to_b(self.natural_params[0]))
 
 class WishartDensity(ExpoFamilyDensity): 
     p: Optional[int] = None
@@ -44,4 +59,7 @@ def sample_wishart(n_samples: int, seed: int = 42, data_noise_rate=0.00, **kwarg
 
 def sample_weibull(n_samples: int, seed: int = 42, data_noise_rate=0.00, **kwargs): 
     return weibull_min.rvs(size=n_samples, **kwargs)
+
+def sample_laplace(n_samples: int, seed: int = 42, data_noise_rate=0.00, **kwargs): 
+    return laplace.rvs(size=n_samples, **kwargs)
 # %%
