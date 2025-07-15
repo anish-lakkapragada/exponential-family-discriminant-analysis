@@ -136,12 +136,15 @@ if __name__ == "__main__":
 
             store_file = store_dir / evaluation_cfg.name
 
-            with store_file.open("w", encoding="utf-8") as f:
+            mode = "w" if exp_num == 0 else "a"
+
+            with store_file.open(mode, encoding="utf-8") as f:
                 file_console = Console(file=f, width=console.width)
                 file_console.print(evaluation_table)
 
-            config_json = evaluation_cfg.model_dump_json(indent=2)
-            with store_file.open("a", encoding="utf-8") as f:
-                f.write(config_json)
-                f.write("\n")
+            if exp_num == len(evaluation_cfg.experiments) - 1: 
+                config_json = evaluation_cfg.model_dump_json(indent=2)
+                with store_file.open("a", encoding="utf-8") as f:
+                    f.write(config_json)
+                    f.write("\n")
 

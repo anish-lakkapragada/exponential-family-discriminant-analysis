@@ -8,10 +8,10 @@
                 "distributions": ["wishart", "wishart"], 
                 "true_params": [
                     {"df": 20, "scale": [
-                        [2, 0], [0, 4]
+                        [1, 0.5], [0.5, 1]
                     ]}, 
-                    {"df": 20, "scale": [
-                        [3, 0], [0, 3]
+                    {"df": 15, "scale": [
+                        [1, 0.5], [0.5, 1]
                     ]} 
                 ], 
                 "n_train": 100, 
