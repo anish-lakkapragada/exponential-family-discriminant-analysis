@@ -3,6 +3,7 @@ from typing import List
 import numpy as np 
 from sklearn.linear_model import LogisticRegression 
 from sklearn.metrics import roc_auc_score
+from helpers import compute_ece
 
 def get_upper_diagonal(X: np.ndarray) -> np.ndarray: 
     d = X.shape[1]
@@ -16,10 +17,12 @@ def run_log_reg_wishart(X_train: np.ndarray, y_train: np.ndarray, X_test: np.nda
     log_reg.fit(X_train_changed, y_train)
     y_train_pred, y_test_pred = log_reg.predict(X_train_changed), log_reg.predict(X_test_changed)
     train_eval_result = EvalResult(auc_roc=roc_auc_score(y_train, y_train_pred), 
-                                   acc=np.sum(np.round(y_train_pred) == y_train) / y_train.shape[0]) 
+                                   acc=np.sum(np.round(y_train_pred) == y_train) / y_train.shape[0], 
+                                   ece=compute_ece(y_train, y_train_pred)) 
     
     test_eval_result = EvalResult(auc_roc=roc_auc_score(y_test, y_test_pred), 
-                                  acc=np.sum(np.round(y_test_pred) == y_test) / y_test.shape[0]) 
+                                  acc=np.sum(np.round(y_test_pred) == y_test) / y_test.shape[0], 
+                                  ece=compute_ece(y_test, y_test_pred)) 
     
     return [train_eval_result, test_eval_result]
 
@@ -33,9 +36,11 @@ def run_log_reg(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, y_
     log_reg.fit(X_train, y_train)
     y_train_pred, y_test_pred = log_reg.predict(X_train), log_reg.predict(X_test)
     train_eval_result = EvalResult(auc_roc=roc_auc_score(y_train, y_train_pred), 
-                                   acc=np.sum(np.round(y_train_pred) == y_train) / y_train.shape[0]) 
+                                   acc=np.sum(np.round(y_train_pred) == y_train) / y_train.shape[0], 
+                                   ece=compute_ece(y_train, y_train_pred)) 
     
     test_eval_result = EvalResult(auc_roc=roc_auc_score(y_test, y_test_pred), 
-                                  acc=np.sum(np.round(y_test_pred) == y_test) / y_test.shape[0]) 
+                                  acc=np.sum(np.round(y_test_pred) == y_test) / y_test.shape[0], 
+                                  ece=compute_ece(y_test, y_test_pred)) 
     
     return [train_eval_result, test_eval_result]

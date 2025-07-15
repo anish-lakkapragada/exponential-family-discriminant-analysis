@@ -5,6 +5,7 @@ from distributions import sample_weibull, sample_wishart, sample_laplace, Wishar
 from models import Normal_LDA_Density, Normal_QDA_Density, DataConfig, Dataset, Class_Conditional_Density
 from typing import Dict
 import numpy as np 
+from netcal.metrics import ECE 
 
 METHOD_TO_DENSITY: Dict[str, Class_Conditional_Density]  = {
     "lda": Normal_LDA_Density, 
@@ -39,3 +40,7 @@ def generate_data(run_data: DataConfig) -> Dataset:
     X, y = X_[perm], y_[perm]
     X_train, y_train, X_test, y_test = X[:run_data.n_train], y[:run_data.n_train], X[run_data.n_train:], y[run_data.n_train:]
     return X_train, y_train, X_test, y_test  
+
+def compute_ece(y_true: np.ndarray, y_pred: np.ndarray, n_bins=10): 
+    ece = ECE(n_bins) 
+    return ece.measure(y_pred, y_true)

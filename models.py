@@ -94,6 +94,7 @@ class EvalResult(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
     auc_roc: float
     acc: float
+    ece: Optional[float] = -1.00
     # y_pred: np.ndarray
 
 class ExperimentEvaluation: 
@@ -101,18 +102,25 @@ class ExperimentEvaluation:
     auc_roc_std: float 
     acc: float
     acc_std: float 
+    ece: float 
+    ece_std: float 
     eval_results : List[EvalResult] = [] 
     
     def add_result(self, eval_result: EvalResult): 
         self.eval_results.append(eval_result)
-        aucs, accs = [res.auc_roc for res in self.eval_results], [res.acc for res in self.eval_results]
+        aucs, accs, eces = [res.auc_roc for res in self.eval_results], [res.acc for res in self.eval_results], [res.ece for res in self.eval_results]
         self.auc_roc = np.mean(aucs)
         self.auc_roc_std = np.std(aucs)
         self.acc = np.mean(accs)
         self.acc_std = np.std(accs)
+        self.ece = np.mean(eces)
+        self.ece_std = np.std(eces)
     
     def get_auc(self): 
         return f"{round(self.auc_roc, 4)} ± {round(self.auc_roc_std, 4)}"
+    
+    def get_ece(self): 
+        return f"{round(self.ece, 4)} ± {round(self.ece_std, 4)}"
     
     def get_acc(self): 
         return f"{round(self.acc, 4)} ± {round(self.acc_std, 4)}"

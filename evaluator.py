@@ -1,5 +1,5 @@
 from models import Class_Conditional_Density, Normal_LDA_Density, Speeds, EvalResult, EvaluationConfig, ExperimentEvaluation
-from helpers import generate_data, METHOD_TO_DENSITY
+from helpers import generate_data, METHOD_TO_DENSITY, compute_ece
 from custom import run_log_reg_wishart, run_log_reg
 from sklearn.metrics import roc_auc_score
 from typing import List 
@@ -77,7 +77,8 @@ class Evaluator:
         return EvalResult(
             # y_pred=y_pred, 
             auc_roc=roc_auc_score(y, y_pred), 
-            acc=np.sum(np.round(y_pred) == y) / y.shape[0]
+            acc=np.sum(np.round(y_pred) == y) / y.shape[0], 
+            ece=compute_ece(y, y_pred, n_bins=10)
         )
 
 
@@ -87,7 +88,7 @@ if __name__ == "__main__":
     
     for exp_num, experiment in enumerate(evaluation_cfg.experiments):
         evaluation_table = Table(title=experiment.experiment_name)
-        for col in ["Methods", "True Params", "Class Imbalance", "Train AUC", "Train Acc", "Test AUC", "Test Acc"]: 
+        for col in ["Methods", "True Params", "Class Imbalance", "Train AUC", "Train Acc", "Train ECE", "Test AUC", "Test Acc", "Test ECE"]: 
             evaluation_table.add_column(col)
 
         test_to_tracker_train = {i: ExperimentEvaluation() for i in range(len(experiment.tests))}
@@ -130,8 +131,8 @@ if __name__ == "__main__":
             evaluation_table.add_row(",".join(test.densities), 
                                     str(experiment.data.true_params),
                                     ",".join([str(i) for i in experiment.data.class_imbalance_true])
-                                    , str(test_tracker_train.get_auc()), str(test_tracker_train.get_acc())
-                                    , str(test_tracker_test.get_auc()), str(test_tracker_test.get_acc()))
+                                    , str(test_tracker_train.get_auc()), str(test_tracker_train.get_acc()), str(test_tracker_train.get_ece())
+                                    , str(test_tracker_test.get_auc()), str(test_tracker_test.get_acc()), str(test_tracker_test.get_ece()))
             
         console = Console()
         console.print(evaluation_table)
@@ -153,4 +154,3 @@ if __name__ == "__main__":
                 with store_file.open("a", encoding="utf-8") as f:
                     f.write(config_json)
                     f.write("\n")
-

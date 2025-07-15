@@ -1,0 +1,8 @@
+README.md
+pyproject.toml
+blog/weibull-demo.py
+efda_test.egg-info/PKG-INFO
+efda_test.egg-info/SOURCES.txt
+efda_test.egg-info/dependency_links.txt
+efda_test.egg-info/requires.txt
+efda_test.egg-info/top_level.txt
