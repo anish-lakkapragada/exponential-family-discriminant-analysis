@@ -10,15 +10,15 @@
                     {"df": 20, "scale": [
                         [1, 0.5], [0.5, 1]
                     ]}, 
-                    {"df": 15, "scale": [
-                        [1, 0.5], [0.5, 1]
+                    {"df": 20, "scale": [
+                        [0.5, 0.25], [0.25, 0.5]
                     ]} 
                 ], 
-                "n_train": 100, 
+                "n_train": 1000, 
                 "data_noise_rate": 0.00,
                 "class_noise_rate": 0.00,
                 "n_test": 1000, 
-                "class_imbalance_true": [0.4, 0.6], 
+                "class_imbalance_true": [0.5, 0.5], 
                 "num_classes": 2
             }, 
             "n_trials": 100,
@@ -44,11 +44,11 @@
                     {"loc": 2, "scale": 3}, 
                     {"loc": 3, "scale": 2} 
                 ], 
-                "n_train": 100, 
+                "n_train": 1000, 
                 "data_noise_rate": 0.00,
                 "class_noise_rate": 0.00,
                 "n_test": 1000, 
-                "class_imbalance_true": [0.4, 0.6], 
+                "class_imbalance_true": [0.5, 0.5], 
                 "num_classes": 2
             }, 
             "n_trials": 100,
@@ -86,7 +86,7 @@
                     {"c": 10, "scale": 2}, 
                     {"c": 10, "scale": 4}
                 ], 
-                "n_train": 100, 
+                "n_train": 1000, 
                 "data_noise_rate": 0.00,
                 "class_noise_rate": 0.00,
                 "n_test": 1000, 

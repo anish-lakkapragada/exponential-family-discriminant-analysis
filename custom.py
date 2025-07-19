@@ -18,11 +18,13 @@ def run_log_reg_wishart(X_train: np.ndarray, y_train: np.ndarray, X_test: np.nda
     y_train_pred, y_test_pred = log_reg.predict(X_train_changed), log_reg.predict(X_test_changed)
     train_eval_result = EvalResult(auc_roc=roc_auc_score(y_train, y_train_pred), 
                                    acc=np.sum(np.round(y_train_pred) == y_train) / y_train.shape[0], 
-                                   ece=compute_ece(y_train, y_train_pred)) 
+                                   ece=compute_ece(y_train, y_train_pred), 
+                                   brier_score=np.mean((y_train - y_train_pred) ** 2)) 
     
     test_eval_result = EvalResult(auc_roc=roc_auc_score(y_test, y_test_pred), 
                                   acc=np.sum(np.round(y_test_pred) == y_test) / y_test.shape[0], 
-                                  ece=compute_ece(y_test, y_test_pred)) 
+                                  ece=compute_ece(y_test, y_test_pred), 
+                                  brier_score=np.mean((y_test - y_test_pred) ** 2)) 
     
     return [train_eval_result, test_eval_result]
 
@@ -37,10 +39,12 @@ def run_log_reg(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, y_
     y_train_pred, y_test_pred = log_reg.predict(X_train), log_reg.predict(X_test)
     train_eval_result = EvalResult(auc_roc=roc_auc_score(y_train, y_train_pred), 
                                    acc=np.sum(np.round(y_train_pred) == y_train) / y_train.shape[0], 
-                                   ece=compute_ece(y_train, y_train_pred)) 
+                                   ece=compute_ece(y_train, y_train_pred), 
+                                   brier_score=np.mean((y_train - y_train_pred) ** 2))
     
     test_eval_result = EvalResult(auc_roc=roc_auc_score(y_test, y_test_pred), 
                                   acc=np.sum(np.round(y_test_pred) == y_test) / y_test.shape[0], 
-                                  ece=compute_ece(y_test, y_test_pred)) 
+                                  ece=compute_ece(y_test, y_test_pred), 
+                                  brier_score=np.mean((y_test - y_test_pred) ** 2)) 
     
     return [train_eval_result, test_eval_result]

@@ -1,7 +1,7 @@
 from models import Class_Conditional_Density, Normal_LDA_Density, Speeds, EvalResult, EvaluationConfig, ExperimentEvaluation
 from helpers import generate_data, METHOD_TO_DENSITY, compute_ece
 from custom import run_log_reg_wishart, run_log_reg
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, brier_score_loss
 from typing import List 
 import numpy as np
 import time
@@ -22,7 +22,7 @@ class Evaluator:
 
     def fit_class_densities(self, X: np.ndarray, y: np.ndarray) -> Speeds:
          
-        distribution_types_lda = [type(distribution) == Normal_LDA_Density for distribution in self.distributions]
+        distribution_types_lda = [isinstance(distribution, Normal_LDA_Density) for distribution in self.distributions]
         
         using_lda = False 
         if not all(distribution_types_lda) and any(distribution_types_lda): 
@@ -37,7 +37,7 @@ class Evaluator:
 
         for class_k in range(self.num_classes): 
             idx = y == class_k 
-            self.class_weight_mles[class_k] = np.sum(idx) / X.shape[0]
+            self.class_weight_mles[class_k] = np.sum(idx) / y.shape[0]
 
             # fit the actual density. 
             start_time = time.time()
@@ -72,13 +72,14 @@ class Evaluator:
         denom = np.zeros((self.num_classes, y.shape[0]))
         for i, distribution in enumerate(self.distributions): 
             denom[i] = self.class_weight_mles[i] * distribution.evaluate_pdf(X)
-        y_pred = denom[1] / np.sum(denom, axis=0)
+        y_pred = denom[1] / np.sum(denom, axis=0) # should be denom[1]
 
         return EvalResult(
             # y_pred=y_pred, 
             auc_roc=roc_auc_score(y, y_pred), 
             acc=np.sum(np.round(y_pred) == y) / y.shape[0], 
-            ece=compute_ece(y, y_pred, n_bins=10)
+            ece=compute_ece(y, y_pred, n_bins=20), 
+            brier_score=np.mean((y - y_pred) ** 2)
         )
 
 
@@ -88,7 +89,7 @@ if __name__ == "__main__":
     
     for exp_num, experiment in enumerate(evaluation_cfg.experiments):
         evaluation_table = Table(title=experiment.experiment_name)
-        for col in ["Methods", "True Params", "Class Imbalance", "Train AUC", "Train Acc", "Train ECE", "Test AUC", "Test Acc", "Test ECE"]: 
+        for col in ["Methods", "True Params", "Class Imbalance", "Train AUC", "Train Acc", "Train BS", "Train ECE", "Test AUC", "Test Acc", "Test BS", "Test ECE"]: 
             evaluation_table.add_column(col)
 
         test_to_tracker_train = {i: ExperimentEvaluation() for i in range(len(experiment.tests))}
@@ -131,8 +132,8 @@ if __name__ == "__main__":
             evaluation_table.add_row(",".join(test.densities), 
                                     str(experiment.data.true_params),
                                     ",".join([str(i) for i in experiment.data.class_imbalance_true])
-                                    , str(test_tracker_train.get_auc()), str(test_tracker_train.get_acc()), str(test_tracker_train.get_ece())
-                                    , str(test_tracker_test.get_auc()), str(test_tracker_test.get_acc()), str(test_tracker_test.get_ece()))
+                                    , str(test_tracker_train.get_auc()), str(test_tracker_train.get_acc()), str(test_tracker_train.get_bs()), str(test_tracker_train.get_ece())
+                                    , str(test_tracker_test.get_auc()), str(test_tracker_test.get_acc()), str(test_tracker_test.get_bs()), str(test_tracker_test.get_ece()))
             
         console = Console()
         console.print(evaluation_table)

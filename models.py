@@ -94,7 +94,8 @@ class EvalResult(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
     auc_roc: float
     acc: float
-    ece: Optional[float] = -1.00
+    ece: Optional[float] = -1.
+    brier_score: Optional[float] = -1
     # y_pred: np.ndarray
 
 class ExperimentEvaluation: 
@@ -104,6 +105,9 @@ class ExperimentEvaluation:
     acc_std: float 
     ece: float 
     ece_std: float 
+    brier_score: float 
+    brier_score_std: float 
+
     eval_results : List[EvalResult] = [] 
     
     def add_result(self, eval_result: EvalResult): 
@@ -115,9 +119,15 @@ class ExperimentEvaluation:
         self.acc_std = np.std(accs)
         self.ece = np.mean(eces)
         self.ece_std = np.std(eces)
+
+        bs = [res.brier_score for res in self.eval_results]
+        self.brier_score, self.brier_score_std = np.mean(bs), np.std(bs)
     
     def get_auc(self): 
         return f"{round(self.auc_roc, 4)} ± {round(self.auc_roc_std, 4)}"
+    
+    def get_bs(self): 
+        return f"{round(self.brier_score, 4)} ± {round(self.brier_score_std, 4)}"
     
     def get_ece(self): 
         return f"{round(self.ece, 4)} ± {round(self.ece_std, 4)}"

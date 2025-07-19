@@ -21,6 +21,7 @@ DISTRIBUTION_TO_SAMPLE_GENERATION = {
     "laplace": sample_laplace
 }
 
+
 def generate_data(run_data: DataConfig) -> Dataset: 
     tot = run_data.n_train + run_data.n_test 
     X_tot, y_tot = [], []
@@ -41,6 +42,6 @@ def generate_data(run_data: DataConfig) -> Dataset:
     X_train, y_train, X_test, y_test = X[:run_data.n_train], y[:run_data.n_train], X[run_data.n_train:], y[run_data.n_train:]
     return X_train, y_train, X_test, y_test  
 
-def compute_ece(y_true: np.ndarray, y_pred: np.ndarray, n_bins=20): 
+def compute_ece(y_true: np.ndarray, y_pred: np.ndarray, n_bins=50): 
     ece = ECE(n_bins) 
     return ece.measure(y_pred, y_true)

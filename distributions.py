@@ -12,11 +12,11 @@ class WeibullDensity(ExpoFamilyDensity):
 
     def fit_density(self, X):
         N_C = X.shape[0]
-        eta = - N_C / np.sum(X**self.k)
+        eta = -N_C / np.sum(X**self.k) 
         self.natural_params = [eta]
     
     def eta_to_lambda(eta, k): 
-        return (-1 / eta) ** (1 / k)
+        return (-1 / eta) ** (1 / k) 
     
     def evaluate_pdf(self, x):
         return weibull_min.pdf(x, c=self.k, scale=WeibullDensity.eta_to_lambda(self.natural_params[0], self.k))
