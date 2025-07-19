@@ -24,15 +24,15 @@
             "n_trials": 100,
             "tests": [
                 {
+                    "densities": ["log-reg-matrix", "log-reg-matrix"],
+                    "custom": true
+                },
+                {
                     "densities": ["efda-wishart", "efda-wishart"], 
                     "param_defaults": [
                         {"p": 2, "n": 20}, 
                         {"p": 2, "n": 20}
                     ]
-                }, 
-                {
-                    "densities": ["log-reg-matrix", "log-reg-matrix"],
-                    "custom": true
                 }
             ]
         }, 

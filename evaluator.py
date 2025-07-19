@@ -101,16 +101,16 @@ if __name__ == "__main__":
                 if test.custom: 
                     if test.densities[0] == "log-reg": 
                         eval_result_train, eval_result_test = run_log_reg(X_train, y_train, X_test, y_test)
-                        test_to_tracker_train[t].add_result(evaluator.evaluate(X_train, y_train))
-                        test_to_tracker_test[t].add_result(evaluator.evaluate(X_test, y_test))
-                        break  
+                        test_to_tracker_train[t].add_result(eval_result_train)
+                        test_to_tracker_test[t].add_result(eval_result_test)
+                        continue  
 
                     elif test.densities[0] == "log-reg-matrix":
                         # use logistic regression 
                         eval_result_train, eval_result_test = run_log_reg_wishart(X_train, y_train, X_test, y_test)
-                        test_to_tracker_train[t].add_result(evaluator.evaluate(X_train, y_train))
-                        test_to_tracker_test[t].add_result(evaluator.evaluate(X_test, y_test))
-                        break  
+                        test_to_tracker_train[t].add_result(eval_result_train)
+                        test_to_tracker_test[t].add_result(eval_result_test)
+                        continue  
 
                 run_densities = [] 
                 for i, method in enumerate(test.densities): 
