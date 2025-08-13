@@ -78,6 +78,9 @@ def compute_efda_log_odds(X, X_data, y):
     class_zero_pdf =   weibull_min.pdf(X, c=K_TRUE, scale=eta_to_lambda(eta_0_hat))
     return np.log((alpha_hat * class_one_pdf) / ((1 - alpha_hat) * class_zero_pdf)).flatten()
 
+fig, ax = plt.subplots(figsize=(12, 8))
+    
+plt.subplots_adjust(left=0.2, bottom=0.2, right=0.9, top=0.7)
 
 for trial in range(N_trials): 
     X, y = generate_data(n)
@@ -89,16 +92,17 @@ for trial in range(N_trials):
     label_log_reg = "Logistic Regression" if trial == 0 else None 
     label_efda = "EFDA" if trial == 0 else None
     lw = 1 if trial == 0 else 0.1
-    plt.plot(data_values, log_reg_log_odds, color="blue", linewidth=lw, label=label_log_reg)
-    plt.plot(data_values, efda_log_odds, color="orange", linewidth=lw, label=label_efda)
+    ax.plot(data_values, log_reg_log_odds, color="blue", linewidth=lw, label=label_log_reg)
+    ax.plot(data_values, efda_log_odds, color="orange", linewidth=lw, label=label_efda)
 
 true_log_odds = np.log(ALPHA_TRUE / (1 - ALPHA_TRUE)) + (K_TRUE) * np.log(CLASS_ZERO_TRUE_LAMBDA / CLASS_ONE_TRUE_LAMBDA) + np.pow(data_values, K_TRUE) * ((1 / CLASS_ZERO_TRUE_LAMBDA ** K_TRUE) - (1 / CLASS_ONE_TRUE_LAMBDA ** K_TRUE))
-plt.plot(data_values, true_log_odds.flatten(), label="True Log Odds Function", color="green")
+ax.plot(data_values, true_log_odds.flatten(), label="True Log Odds Function", color="green")
 
-plt.xlabel("X")
-plt.ylabel(r"$\log \frac{p(X)}{1 - p(X)}$")
-# plt.title(f"Logistic Regression and EFDA Log-Odds over {N_trials} trials, $n = {n}$")
-plt.legend()
+ax.set_xlabel("X")
+ax.set_ylabel(r"$\log \frac{p(X)}{1 - p(X)}$", fontsize=10)
+ax.set_title(f"Logistic Regression and EFDA Log-Odds over {N_trials} trials, $n = {n}$", fontsize=12, pad=10)
+ax.legend()
+ax.margins(x=0.1, y=0.1)
 plt.show()
 
 # %%

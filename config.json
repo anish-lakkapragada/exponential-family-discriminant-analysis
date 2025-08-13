@@ -83,8 +83,8 @@
             "data": {
                 "distributions": ["weibull", "weibull"], 
                 "true_params": [
-                    {"c": 10, "scale": 2}, 
-                    {"c": 10, "scale": 4}
+                    {"c": 5, "scale": 2}, 
+                    {"c": 5, "scale": 4}
                 ], 
                 "n_train": 100, 
                 "data_noise_rate": 0.00,
@@ -98,8 +98,8 @@
                 {
                     "densities": ["efda-weibull", "efda-weibull"], 
                     "param_defaults": [
-                        {"k": 10}, 
-                        {"k": 10}
+                        {"k": 5}, 
+                        {"k": 5}
                     ]
                 },
                 {

@@ -78,7 +78,7 @@ class Evaluator:
             # y_pred=y_pred, 
             auc_roc=roc_auc_score(y, y_pred), 
             acc=np.sum(np.round(y_pred) == y) / y.shape[0], 
-            ece=compute_ece(y, y_pred, n_bins=10)
+            ece=compute_ece(y, y_pred, n_bins=20)
         )
 
 
