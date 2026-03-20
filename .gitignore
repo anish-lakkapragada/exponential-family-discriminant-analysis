@@ -1,1 +1,39 @@
-.venv
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Virtual environments
+.venv/
+paper/
+.env
+
+# Build artifacts
+dist/
+build/
+
+# Tool-specific
+.DS_Store
+.claude/
+lean/Claude-EFDAChallenge.lean
+
+# Internal / not for distribution
+deprecated/
+CLEANING.md
+prompting/
+literature/
+evals/
+
+# LaTeX intermediates (keep source, PDF, and figures)
+paper/*.log
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.toc
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+
+*.zip
