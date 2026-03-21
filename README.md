@@ -1,6 +1,6 @@
 # Code for Exponential Family Discriminant Analysis (EFDA)
 
-This is our code for our paper on exponential family discriminant analysis. It contains all experiment scripts used to get results and generate figures, along with code to run AI-driven Lean 4 Verification of our stated proofs.
+Code for my paper on Exponential Family Discriminant Analysis. Contains all experiment scripts used to produce results and figures, along with Lean 4 formal verification of the four main propositions.
 
 
 ## Install
@@ -29,7 +29,8 @@ experiments/
 results/                     # JSON outputs written by the experiment scripts
 lean/                        # Lean 4 formal verification (see lean/README.md)
   EFDAChallenge.lean         # Theorem stubs (challenge file)
-  aristotle/                 # Best proofs: all 4 paper theorems, no sorry
+  aristotle/                 # Aristotle's proofs (Harmonic): 4/4, no sorry
+  opengauss-results/         # OpenGauss's proofs (Math, Inc.): 4/4, no sorry
   verification/verify.py     # AXLE verification harness
 ```
 

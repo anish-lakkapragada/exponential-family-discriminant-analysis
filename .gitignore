@@ -13,10 +13,13 @@ paper/
 dist/
 build/
 
+Claude-EFDAChallenge.lean 
+
 # Tool-specific
 .DS_Store
 .claude/
-lean/Claude-EFDAChallenge.lean
+
+TWEET.md
 
 # Internal / not for distribution
 deprecated/
