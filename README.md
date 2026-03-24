@@ -1,4 +1,4 @@
-# Code for Exponential Family Discriminant Analysis (EFDA)
+# Code for [Exponential Family Discriminant Analysis (EFDA)](https://arxiv.org/pdf/2603.20655)
 
 Code for my paper on Exponential Family Discriminant Analysis. Contains all experiment scripts used to produce results and figures, along with Lean 4 formal verification of the four main propositions.
 
